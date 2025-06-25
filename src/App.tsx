@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid } from '@mui/material';
 
 function App() {
@@ -24,7 +23,7 @@ function App() {
          </Grid>
 
          {/* Tabla */}
-         <Grid
+         <Grid 
             sx={{ display: { xs: "none", md: "block" } }}>
             Elemento: Tabla
          </Grid>
