@@ -29,6 +29,8 @@ function App() {
 
          {/* Indicadores */}
          <Grid container size={{ xs: 12, md: 9 }} >
+                  {/* Renderizado condicional de los datos obtenidos */}
+
                  {dataFetcherOutput.loading && <p>Cargando datos...</p>}
                  {dataFetcherOutput.error && <p>Error: {dataFetcherOutput.error}</p>}
                  {dataFetcherOutput.data && (
@@ -59,7 +61,8 @@ function App() {
                              title='Humedad relativa'
                              description={dataFetcherOutput.data.current.relative_humidity_2m + " " + dataFetcherOutput.data.current_units.relative_humidity_2m} />
                      </Grid>
-                   </>
+
+                 </>
                  )}
 
              </Grid>
