@@ -66,8 +66,8 @@ export default function DataFetcher() : DataFetcherOutput {
 
         fetchData();
 
-    }, []); // El array vacío asegura que el efecto se ejecute solo una vez después del primer renderizado
+    }, [handleCityChange]); // El array vacío asegura que el efecto se ejecute solo una vez después del primer renderizado
 
-    return { data, loading, error };
+    return { data, loading, error};
 
 }
