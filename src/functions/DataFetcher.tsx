@@ -1,53 +1,53 @@
 import { useEffect, useState } from 'react';
 import type { OpenMeteoResponse } from '../types/DashboardTypes';
 
-interface DataFetcherOutput {
-    data: OpenMeteoResponse | null;
-    loading: boolean;
-    error: string | null;
+interface Props {
+  city: string;
 }
 
-export default function DataFetcher() : DataFetcherOutput {
+interface DataFetcherOutput {
+  data: OpenMeteoResponse | null;
+  loading: boolean;
+  error: string | null;
+}
 
-    const [data, setData] = useState<OpenMeteoResponse | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+const coordinates: Record<string, { lat: number; lon: number }> = {
+  guayaquil: { lat: -2.17, lon: -79.92 },
+  quito: { lat: -0.18, lon: -78.47 },
+  manta: { lat: -0.95, lon: -80.72 },
+  cuenca: { lat: -2.90, lon: -79.00 },
+};
 
-    useEffect(() => {
+export default function DataFetcher({ city }: Props): DataFetcherOutput {
+  const [data, setData] = useState<OpenMeteoResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-        // Reemplace con su URL de la API de Open-Meteo obtenida en actividades previas
-        const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature';
+  useEffect(() => {
+    if (!city) return;
 
-        const fetchData = async () => {
+    const { lat, lon } = coordinates[city];
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature`;
 
-            try {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+        }
+        const result: OpenMeteoResponse = await response.json();
+        setData(result);
+      } catch (err: any) {
+        setError(err.message ?? 'Error desconocido.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                const response = await fetch(url);
+    fetchData();
+  }, [city]);
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
-                }
-
-                const result: OpenMeteoResponse = await response.json();
-                setData(result);
-
-            } catch (err: any) {
-
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("Ocurrió un error desconocido al obtener los datos.");
-                }
-
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-
-    }, []); // El array vacío asegura que el efecto se ejecute solo una vez después del primer renderizado
-
-    return { data, loading, error};
-
+  return { data, loading, error };
 }
