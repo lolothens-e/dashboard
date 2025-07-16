@@ -1,5 +1,13 @@
 import Box from '@mui/material/Box';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import { useMemo } from 'react';
+import DataFetcher from '../functions/DataFetcher';
+
+interface TableUIProps {
+   selectedCity: string;
+}
 
 function combineArrays(arrLabels: Array<string>, arrValues1: Array<number>, arrValues2: Array<number>) {
    return arrLabels.map((label, index) => ({
@@ -38,13 +46,32 @@ const columns: GridColDef[] = [
    },
 ];
 
-const arrValues1 = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const arrValues2 = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const arrLabels = ['A','B','C','D','E','F','G'];
+export default function TableUI({ selectedCity }: TableUIProps) {
+   const { data, loading, error } = DataFetcher({ city: selectedCity });
 
-export default function TableUI() {
+   const rows = useMemo(() => {
+      if (!data) return [];
+      
+      const temperatures = data.hourly.temperature_2m.slice(0, 7);
+      const windSpeeds = data.hourly.wind_speed_10m.slice(0, 7);
+      const timeLabels = data.hourly.time.slice(0, 7).map(time => 
+         new Date(time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      );
+      
+      return combineArrays(timeLabels, temperatures, windSpeeds);
+   }, [data]);
 
-   const rows = combineArrays(arrLabels, arrValues1, arrValues2);
+   if (loading) {
+      return (
+         <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+         </Box>
+      );
+   }
+
+   if (error) {
+      return <Alert severity="error">{error}</Alert>;
+   }
 
    return (
       <Box sx={{ height: 350, width: '100%' }}>

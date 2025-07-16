@@ -76,11 +76,11 @@ function App() {
       </Grid>
 
       <Grid sx={{ display: { xs: 'none', md: 'block' } }}>
-        <ChartUI />
+        <ChartUI selectedCity={selectedCity} />
       </Grid>
 
       <Grid sx={{ display: { xs: 'none', md: 'block' } }}>
-        <TableUI />
+        <TableUI selectedCity={selectedCity} />
       </Grid>
 
       <Grid>Elemento: Información adicional</Grid>
